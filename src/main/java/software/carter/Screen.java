@@ -15,6 +15,8 @@ public class Screen {
     public record Sector(int x, int y, int width, int height, int scaledW, int scaledH) {}
     private Robot robot;
     private Sector timeStampSector;
+    private Sector chatSector;
+    private static final int THRESHOLD_RANGE = 25;
 
     public Screen() {
         try {
@@ -23,7 +25,8 @@ public class Screen {
             e.printStackTrace();
         }
 
-        timeStampSector = new Sector(2111, 1177, 121, 39, 600, 100);
+        timeStampSector = new Sector(4240, 1176, 112, 38, 600, 100);
+        chatSector = new Sector(2235, 625, 581, 290, 600, 300);
     }
 
     private BufferedImage screenshot(Sector s) {
@@ -40,21 +43,23 @@ public class Screen {
      * @return 
      *  Matching pixels Black, rest Green.
      */
+    // TODO: Replace int r,g,b with Color c
     private static BufferedImage threshold(BufferedImage image, int r, int g, int b) {
-        int range = 45;
+        int pixel;
+        Color color;
 
         for (int x = 0; x <= image.getWidth() - 1; x++)
         {
             for (int y = 0; y <= image.getHeight() - 1; y++)
             {
-                int pixel = image.getRGB(x, y);
-                Color color = new Color(pixel, true);
+                pixel = image.getRGB(x, y);
+                color = new Color(pixel, true);
 
                 // If the current pixel matches, set it to black.
                 // If not, set it to green. This produces **great** ocr results.
-                if (color.getRed() >= r - range && color.getRed() <= r + range &&
-                    color.getGreen() >= g - range && color.getGreen() <= g + range &&
-                    color.getBlue() >= b - range && color.getBlue() <= b + range)
+                if (color.getRed() >= r - THRESHOLD_RANGE && color.getRed() <= r + THRESHOLD_RANGE &&
+                    color.getGreen() >= g - THRESHOLD_RANGE && color.getGreen() <= g + THRESHOLD_RANGE &&
+                    color.getBlue() >= b - THRESHOLD_RANGE && color.getBlue() <= b + THRESHOLD_RANGE)
                 {
                     image.setRGB(x, y, 0x000000);
                 } else {
@@ -67,5 +72,9 @@ public class Screen {
     
     public BufferedImage testTimeStampCapture() {
         return threshold(screenshot(timeStampSector), 255, 255, 255);
+    }
+
+    public BufferedImage testChatCapture() {
+        return threshold(screenshot(chatSector), 249, 149, 67);
     }
 }
