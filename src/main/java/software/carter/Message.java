@@ -6,7 +6,6 @@ public class Message {
     private String previousMessage;
     private String nextMessage;
     private boolean duplicate;
-    private int lineCount;
 
     public Message(String input) {
         if (!input.contains("[") || !input.contains("]")) {
